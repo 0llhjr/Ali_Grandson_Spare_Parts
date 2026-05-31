@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        .header { background: #f8f9fa; padding: 20px; text-align: center; border-bottom: 2px solid #007bff; }
+        .content { padding: 20px; }
+        .status-box { background: #e9ecef; padding: 15px; border-radius: 5px; text-align: center; font-size: 1.2em; font-weight: bold; }
+    </style>
+</head>
+<body>
+    <div class="header"><h2>Order Status Update</h2></div>
+    <div class="content">
+        <p>Hi {{customerName}},</p>
+        <p>The status of your order <strong>#{{orderId}}</strong> has been updated:</p>
+        <div class="status-box">{{newStatus}}</div>
+        <p>Thank you for shopping with Ali Grandson Spare Parts!</p>
+    </div>
+</body>
+</html>

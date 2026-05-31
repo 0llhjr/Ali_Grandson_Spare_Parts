@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body { font-family: Arial, sans-serif; color: #333; }
+        .header { background: #f8f9fa; padding: 20px; text-align: center; border-bottom: 2px solid #28a745; }
+        .content { padding: 20px; }
+        .order-details { background: #f1f1f1; padding: 15px; border-radius: 5px; }
+    </style>
+</head>
+<body>
+    <div class="header"><h2>New Order Received</h2></div>
+    <div class="content">
+        <p>Hello Admin,</p>
+        <p>A new order has been placed on the Ali Grandson Spare Parts app.</p>
+        <div class="order-details">
+            <p><strong>Order ID:</strong> #{{orderId}}</p>
+            <p><strong>Customer:</strong> {{customerName}}</p>
+            <p><strong>Total Amount:</strong> {{totalAmount}}</p>
+        </div>
+        <p>Please log in to the admin dashboard to process this order.</p>
+    </div>
+</body>
+</html>
