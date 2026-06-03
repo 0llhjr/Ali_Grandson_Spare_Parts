@@ -1,20 +1,64 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .header { background: #f8f9fa; padding: 20px; text-align: center; border-bottom: 2px solid #ffc107; }
-        .content { padding: 20px; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif; color: #333; }
+    .wrapper { width: 100%; background-color: #f4f4f4; padding: 40px 0; }
+    .card { width: 90%; max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #800000, #5D0000); padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+    .header p { margin: 6px 0 0; color: rgba(255,255,255,0.80); font-size: 13px; }
+    .body { padding: 32px 28px; }
+    .body p { margin: 0 0 16px; font-size: 15px; line-height: 1.65; }
+    .notice { border-radius: 0 6px 6px 0; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #555; }
+    .notice.amber { background: #fffbf0; border-left: 4px solid #FFC107; }
+    .footer { background: #f4f4f4; padding: 20px 24px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #e9ecef; }
+    /* Template-specific */
+    .stock-box { background: #fffbf0; border: 2px dashed #FFC107; border-radius: 8px; padding: 18px 24px; text-align: center; margin: 24px 0; }
+    .stock-box .label { font-size: 12px; color: #6c757d; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .stock-box .qty { font-size: 36px; font-weight: 900; color: #FFC107; line-height: 1; }
+    .stock-box .unit { font-size: 13px; color: #6c757d; margin-top: 4px; }
+    .stock-box .product-name { font-size: 18px; font-weight: 700; color: #333; margin-bottom: 12px; }
+  </style>
 </head>
 <body>
-    <div class="header"><h2>Low Stock Alert</h2></div>
-    <div class="content">
-        <p>Hello Admin,</p>
-        <p>The following product is running low on stock:</p>
-        <p><strong>Product:</strong> {{productName}}</p>
-        <p><strong>Remaining Quantity:</strong> {{quantity}}</p>
-        <p>Please restock soon.</p>
+<div class="wrapper">
+  <div class="card">
+
+    <div class="header">
+      <h1>Ali Grandson Spare Parts</h1>
+      <p>Inventory Alert</p>
     </div>
+
+    <div class="body">
+      <p>Hello <strong>Admin</strong>,</p>
+      <p>The following product is running low on stock and may need restocking soon:</p>
+
+      <div class="stock-box">
+        <div class="label">Product</div>
+        <div class="product-name">{{productName}}</div>
+        <div class="label">Units Remaining</div>
+        <div class="qty">{{quantity}}</div>
+        <div class="unit">units in stock</div>
+      </div>
+
+      <div class="notice amber">
+        <strong>Action required:</strong> Please restock <strong>{{productName}}</strong>
+        soon to avoid running out and missing potential sales.
+      </div>
+
+      <p>Log in to the admin dashboard to update the inventory.</p>
+      <p>Best regards,<br><strong>Ali Grandson Spare Parts System</strong></p>
+    </div>
+
+    <div class="footer">
+      &copy; {{year}} Ali Grandson Spare Parts. All rights reserved.<br>
+      This is an automated message — please do not reply directly.
+    </div>
+
+  </div>
+</div>
 </body>
 </html>

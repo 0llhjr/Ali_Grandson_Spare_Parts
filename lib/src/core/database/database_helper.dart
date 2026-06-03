@@ -628,6 +628,15 @@ class DatabaseHelper {
     return maps.isNotEmpty ? maps.first : null;
   }
 
+  /// Looks up a user by email alone (no password required).
+  /// Used by the forgot-password flow to verify the email exists before
+  /// generating and emailing a temporary password.
+  Future<Map<String, dynamic>?> getUserByEmail(String email) async {
+    final db = await instance.database;
+    final maps = await db.query('users', where: 'email = ?', whereArgs: [email]);
+    return maps.isNotEmpty ? maps.first : null;
+  }
+
   Future<Map<String, dynamic>?> getAdmin(String email, String password) async {
     final db = await instance.database;
     final maps = await db.query('admins',

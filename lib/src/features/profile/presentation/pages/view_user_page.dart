@@ -61,7 +61,7 @@ class _ViewUserPageState extends State<ViewUserPage> {
         final result = await _emailService.sendGoogleEmail(
           recipientEmails: email,
           subject: 'Your Password Has Been Reset - Ali Grandson Spare Parts',
-          htmlBody: EmailTemplates.passwordReset(name, newPassword),
+          htmlBody: await EmailTemplates.passwordReset(name, newPassword),
         );
 
         if (result['success']) {

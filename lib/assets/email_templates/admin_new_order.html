@@ -1,24 +1,75 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .header { background: #f8f9fa; padding: 20px; text-align: center; border-bottom: 2px solid #28a745; }
-        .content { padding: 20px; }
-        .order-details { background: #f1f1f1; padding: 15px; border-radius: 5px; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif; color: #333; }
+    .wrapper { width: 100%; background-color: #f4f4f4; padding: 40px 0; }
+    .card { width: 90%; max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #800000, #5D0000); padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+    .header p { margin: 6px 0 0; color: rgba(255,255,255,0.80); font-size: 13px; }
+    .body { padding: 32px 28px; }
+    .body p { margin: 0 0 16px; font-size: 15px; line-height: 1.65; }
+    .notice { border-radius: 0 6px 6px 0; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #555; }
+    .notice.blue { background: #f0f8ff; border-left: 4px solid #17A2B8; }
+    .footer { background: #f4f4f4; padding: 20px 24px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #e9ecef; }
+    /* Template-specific */
+    .order-table { width: 100%; border-collapse: collapse; margin: 24px 0; border-radius: 8px; overflow: hidden; }
+    .order-table th { background: #800000; color: #fff; text-align: left; padding: 10px 14px; font-size: 13px; }
+    .order-table td { padding: 11px 14px; font-size: 14px; border-bottom: 1px solid #e9ecef; }
+    .order-table tr:last-child td { border-bottom: none; }
+    .order-table tr:nth-child(even) td { background: #fafafa; }
+    .total-row td { font-weight: 700; color: #800000; }
+  </style>
 </head>
 <body>
-    <div class="header"><h2>New Order Received</h2></div>
-    <div class="content">
-        <p>Hello Admin,</p>
-        <p>A new order has been placed on the Ali Grandson Spare Parts app.</p>
-        <div class="order-details">
-            <p><strong>Order ID:</strong> #{{orderId}}</p>
-            <p><strong>Customer:</strong> {{customerName}}</p>
-            <p><strong>Total Amount:</strong> {{totalAmount}}</p>
-        </div>
-        <p>Please log in to the admin dashboard to process this order.</p>
+<div class="wrapper">
+  <div class="card">
+
+    <div class="header">
+      <h1>Ali Grandson Spare Parts</h1>
+      <p>New Order Received</p>
     </div>
+
+    <div class="body">
+      <p>Hello <strong>Admin</strong>,</p>
+      <p>A new order has just been placed on the store. Here are the details:</p>
+
+      <table class="order-table">
+        <tr>
+          <th>Field</th>
+          <th>Details</th>
+        </tr>
+        <tr>
+          <td>Order ID</td>
+          <td><strong>#{{orderId}}</strong></td>
+        </tr>
+        <tr>
+          <td>Customer</td>
+          <td>{{customerName}}</td>
+        </tr>
+        <tr class="total-row">
+          <td>Total Amount</td>
+          <td>{{totalAmount}}</td>
+        </tr>
+      </table>
+
+      <div class="notice blue">
+        <strong>Next step:</strong> Log in to the admin dashboard to review
+        the full order and update its status.
+      </div>
+
+      <p>Best regards,<br><strong>Ali Grandson Spare Parts System</strong></p>
+    </div>
+
+    <div class="footer">
+      &copy; {{year}} Ali Grandson Spare Parts. All rights reserved.<br>
+      This is an automated message — please do not reply directly.
+    </div>
+
+  </div>
+</div>
 </body>
 </html>

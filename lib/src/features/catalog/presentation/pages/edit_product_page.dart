@@ -129,7 +129,7 @@ class _EditProductPageState extends State<EditProductPage> {
         await _emailService.sendGoogleEmail(
           recipientEmails: user['email'],
           subject: 'Back in Stock: $name',
-          htmlBody: EmailTemplates.productBackInStock(user['name'] ?? user['username'], name),
+          htmlBody: await EmailTemplates.productBackInStock(user['name'] ?? user['username'], name),
         );
       }
     }

@@ -1,19 +1,60 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .header { background: #f8f9fa; padding: 20px; text-align: center; border-bottom: 2px solid #6c757d; }
-        .content { padding: 20px; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif; color: #333; }
+    .wrapper { width: 100%; background-color: #f4f4f4; padding: 40px 0; }
+    .card { width: 90%; max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #800000, #5D0000); padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+    .header p { margin: 6px 0 0; color: rgba(255,255,255,0.80); font-size: 13px; }
+    .body { padding: 32px 28px; }
+    .body p { margin: 0 0 16px; font-size: 15px; line-height: 1.65; }
+    .notice { border-radius: 0 6px 6px 0; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #555; }
+    .notice.red { background: #fff3f3; border-left: 4px solid #DC3545; }
+    .footer { background: #f4f4f4; padding: 20px 24px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #e9ecef; }
+    /* Template-specific */
+    .cancelled-box { background: #fff3f3; border: 2px solid #DC3545; border-radius: 8px; padding: 18px 22px; margin: 24px 0; }
+    .cancelled-box .heading { font-size: 13px; color: #DC3545; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; }
+    .cancelled-box .reason { font-size: 14px; color: #333; line-height: 1.6; }
+  </style>
 </head>
 <body>
-    <div class="header"><h2>Order Cancelled</h2></div>
-    <div class="content">
-        <p>Hi {{customerName}},</p>
-        <p>We're sorry to inform you that your order <strong>#{{orderId}}</strong> has been cancelled.</p>
-        <p>If you have any questions or if this was done in error, please contact our support team.</p>
-        <p>We hope to see you again soon.</p>
+<div class="wrapper">
+  <div class="card">
+
+    <div class="header">
+      <h1>Ali Grandson Spare Parts</h1>
+      <p>Order Cancellation Notice</p>
     </div>
+
+    <div class="body">
+      <p>Hi <strong>{{customerName}}</strong>,</p>
+      <p>We regret to inform you that your order <strong>#{{orderId}}</strong>
+         has been cancelled by our team.</p>
+
+      <div class="cancelled-box">
+        <div class="heading">Reason for Cancellation</div>
+        <div class="reason">{{reason}}</div>
+      </div>
+
+      <div class="notice red">
+        <strong>Need help?</strong> If you believe this cancellation was made
+        in error or have any questions, please contact our support team directly.
+      </div>
+
+      <p>We apologise for any inconvenience caused and hope to serve you again soon.</p>
+      <p>Best regards,<br><strong>Ali Grandson Spare Parts Team</strong></p>
+    </div>
+
+    <div class="footer">
+      &copy; {{year}} Ali Grandson Spare Parts. All rights reserved.<br>
+      This is an automated message — please do not reply directly.
+    </div>
+
+  </div>
+</div>
 </body>
 </html>

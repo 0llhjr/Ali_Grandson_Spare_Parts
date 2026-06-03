@@ -1,18 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .header { background: #f8f9fa; padding: 20px; text-align: center; border-bottom: 2px solid #28a745; }
-        .content { padding: 20px; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif; color: #333; }
+    .wrapper { width: 100%; background-color: #f4f4f4; padding: 40px 0; }
+    .card { width: 90%; max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #800000, #5D0000); padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+    .header p { margin: 6px 0 0; color: rgba(255,255,255,0.80); font-size: 13px; }
+    .body { padding: 32px 28px; }
+    .body p { margin: 0 0 16px; font-size: 15px; line-height: 1.65; }
+    .notice { border-radius: 0 6px 6px 0; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #555; }
+    .notice.green { background: #f0fff4; border-left: 4px solid #28A745; }
+    .footer { background: #f4f4f4; padding: 20px 24px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #e9ecef; }
+    /* Template-specific */
+    .delivered-box { background: #f0fff4; border: 2px solid #28A745; border-radius: 8px; padding: 22px 24px; text-align: center; margin: 24px 0; }
+    .delivered-box .icon { font-size: 40px; line-height: 1; }
+    .delivered-box .title { font-size: 18px; font-weight: 700; color: #28A745; margin: 10px 0 4px; }
+    .delivered-box .sub { font-size: 13px; color: #6c757d; }
+  </style>
 </head>
 <body>
-    <div class="header"><h2>Order Delivered!</h2></div>
-    <div class="content">
-        <p>Hi {{customerName}},</p>
-        <p>Good news! Your order <strong>#{{orderId}}</strong> has been delivered.</p>
-        <p>We hope you are satisfied with your purchase. Thank you for choosing Ali Grandson Spare Parts!</p>
+<div class="wrapper">
+  <div class="card">
+
+    <div class="header">
+      <h1>Ali Grandson Spare Parts</h1>
+      <p>Your Order Has Been Delivered</p>
     </div>
+
+    <div class="body">
+      <p>Hi <strong>{{customerName}}</strong>,</p>
+      <p>Great news — your order has been successfully delivered!</p>
+
+      <div class="delivered-box">
+        <div class="icon">&#10003;</div>
+        <div class="title">Delivered</div>
+        <div class="sub">Order <strong>#{{orderId}}</strong></div>
+      </div>
+
+      <div class="notice green">
+        <strong>Enjoy your purchase!</strong> If anything is missing or damaged,
+        please contact our support team as soon as possible so we can make it right.
+      </div>
+
+      <p>Thank you for choosing Ali Grandson Spare Parts. We look forward to serving you again!</p>
+      <p>Best regards,<br><strong>Ali Grandson Spare Parts Team</strong></p>
+    </div>
+
+    <div class="footer">
+      &copy; {{year}} Ali Grandson Spare Parts. All rights reserved.<br>
+      This is an automated message — please do not reply directly.
+    </div>
+
+  </div>
+</div>
 </body>
 </html>

@@ -1,19 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .header { background: #f8f9fa; padding: 20px; text-align: center; border-bottom: 2px solid #dc3545; }
-        .content { padding: 20px; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif; color: #333; }
+    .wrapper { width: 100%; background-color: #f4f4f4; padding: 40px 0; }
+    .card { width: 90%; max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #800000, #5D0000); padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+    .header p { margin: 6px 0 0; color: rgba(255,255,255,0.80); font-size: 13px; }
+    .body { padding: 32px 28px; }
+    .body p { margin: 0 0 16px; font-size: 15px; line-height: 1.65; }
+    .notice { border-radius: 0 6px 6px 0; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #555; }
+    .notice.red { background: #fff3f3; border-left: 4px solid #DC3545; }
+    .footer { background: #f4f4f4; padding: 20px 24px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #e9ecef; }
+    /* Template-specific */
+    .oos-box { background: #fff3f3; border: 2px solid #DC3545; border-radius: 8px; padding: 20px 24px; text-align: center; margin: 24px 0; }
+    .oos-box .badge { display: inline-block; background: #DC3545; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 12px; }
+    .oos-box .name { font-size: 18px; font-weight: 700; color: #333; }
+  </style>
 </head>
 <body>
-    <div class="header"><h2>Out of Stock Alert</h2></div>
-    <div class="content">
-        <p>Hello Admin,</p>
-        <p>The following product is now <strong>out of stock</strong>:</p>
-        <p><strong>Product:</strong> {{productName}}</p>
-        <p>Please restock immediately to avoid losing sales.</p>
+<div class="wrapper">
+  <div class="card">
+
+    <div class="header">
+      <h1>Ali Grandson Spare Parts</h1>
+      <p>Inventory Alert</p>
     </div>
+
+    <div class="body">
+      <p>Hello <strong>Admin</strong>,</p>
+      <p>A product in your catalog has just gone <strong>out of stock</strong>:</p>
+
+      <div class="oos-box">
+        <div class="badge">Out of Stock</div>
+        <div class="name">{{productName}}</div>
+      </div>
+
+      <div class="notice red">
+        <strong>Urgent:</strong> Customers can no longer purchase
+        <strong>{{productName}}</strong>. Please restock immediately to resume sales.
+      </div>
+
+      <p>Log in to the admin dashboard to update the inventory and set a new quantity.</p>
+      <p>Best regards,<br><strong>Ali Grandson Spare Parts System</strong></p>
+    </div>
+
+    <div class="footer">
+      &copy; {{year}} Ali Grandson Spare Parts. All rights reserved.<br>
+      This is an automated message — please do not reply directly.
+    </div>
+
+  </div>
+</div>
 </body>
 </html>

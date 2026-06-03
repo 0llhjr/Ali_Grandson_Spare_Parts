@@ -287,7 +287,7 @@ class _OrderPageState extends State<OrderPage> {
     await _emailService.sendGoogleEmail(
       recipientEmails: adminEmail,
       subject: 'New Order Received #$orderId',
-      htmlBody: EmailTemplates.newOrderAdmin(
+      htmlBody: await EmailTemplates.newOrderAdmin(
           orderId, _customerName, 'OMR ${_totalPrice.toStringAsFixed(3)}'),
     );
     for (var item in _cartItems) {
@@ -298,13 +298,13 @@ class _OrderPageState extends State<OrderPage> {
           await _emailService.sendGoogleEmail(
             recipientEmails: adminEmail,
             subject: 'Out of Stock Alert: ${product['name']}',
-            htmlBody: EmailTemplates.outOfStockAdmin(product['name']),
+            htmlBody: await EmailTemplates.outOfStockAdmin(product['name']),
           );
         } else if (available < 5) {
           await _emailService.sendGoogleEmail(
             recipientEmails: adminEmail,
             subject: 'Low Stock Alert: ${product['name']}',
-            htmlBody: EmailTemplates.lowStockAdmin(product['name'], available),
+            htmlBody: await EmailTemplates.lowStockAdmin(product['name'], available),
           );
         }
       }

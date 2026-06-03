@@ -1,171 +1,227 @@
 // ============================================================
-// email_templates.dart — HTML Email Templates
+// email_templates.dart — HTML Email Template Loader
 // ============================================================
-// Every automated email sent by the app is generated here as
-// a styled HTML string.
+// Every HTML email body is stored as a standalone .html file
+// under lib/assets/email_templates/.  This class loads each
+// file via rootBundle, then replaces {{placeholder}} tokens
+// with the actual runtime values before returning the string.
 //
-// All templates use a shared _baseTemplate() layout that adds
-// a consistent header, footer, and basic CSS styling.
+// All methods are async because rootBundle.loadString() is
+// async.  Callers must await the result before passing it to
+// EmailService.sendGoogleEmail().
 //
-// Template categories:
-//   Admin alerts  — low stock, out of stock, new order received
-//   Customer info — order status changes, cancellation, delivery,
-//                   back-in-stock, new arrivals, password reset
+// Placeholder convention: {{camelCaseName}}
+//   {{year}}         — current calendar year (injected into every footer)
+//
+// Template files:
+//   Admin alerts    — admin_low_stock.html, admin_out_of_stock.html,
+//                     admin_new_order.html
+//   Customer emails — customer_order_status.html,
+//                     customer_order_cancelled.html,
+//                     customer_order_delivered.html,
+//                     customer_back_in_stock.html,
+//                     customer_new_product.html,
+//                     customer_password_reset.html,
+//                     customer_forgot_password.html
 // ============================================================
 
-/// Provides pre-built HTML email bodies for all system notifications.
+import 'package:flutter/services.dart' show rootBundle;
+
+/// Loads and populates HTML email templates stored in
+/// lib/assets/email_templates/.
 class EmailTemplates {
-  // ── Private Base Layout ───────────────────────────────────────
+  // ── Private Helpers ───────────────────────────────────────────
 
-  /// Wraps [content] inside a standard branded HTML email layout.
-  /// [title] appears as the main heading inside the email body.
-  static String _baseTemplate(String title, String content) {
-    return '''
-<!DOCTYPE html>
-<html>
-<head>
-    <meta charset="utf-8">
-    <style>
-        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-        .container { width: 80%; margin: 20px auto; border: 1px solid #ddd; padding: 20px; border-radius: 10px; }
-        .header { background-color: #f4f4f4; padding: 10px; text-align: center; border-bottom: 1px solid #ddd; }
-        .content { padding: 20px; }
-        .footer { font-size: 12px; text-align: center; color: #777; margin-top: 20px; }
-        .button { display: inline-block; padding: 10px 20px; background-color: #007bff; color: #fff; text-decoration: none; border-radius: 5px; }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h2>Ali Grandson Spare Parts</h2>
-        </div>
-        <div class="content">
-            <h3>$title</h3>
-            $content
-        </div>
-        <div class="footer">
-            &copy; ${DateTime.now().year} Ali Grandson Spare Parts. All rights reserved.
-        </div>
-    </div>
-</body>
-</html>
-''';
+  /// Loads the HTML file at [assetPath] and replaces every key in
+  /// [replacements] (formatted as {{key}}) with its corresponding value.
+  /// Also injects {{year}} with the current calendar year.
+  static Future<String> _load(
+    String assetPath,
+    Map<String, String> replacements,
+  ) async {
+    // Read the raw HTML from the bundled asset.
+    String html = await rootBundle.loadString(assetPath);
+
+    // Always inject the current year into the footer placeholder.
+    html = html.replaceAll('{{year}}', DateTime.now().year.toString());
+
+    // Replace each caller-supplied placeholder.
+    replacements.forEach((key, value) {
+      html = html.replaceAll('{{$key}}', value);
+    });
+
+    return html;
   }
 
   // ── Admin Alert Templates ─────────────────────────────────────
 
   /// Email sent to the admin when a product's stock drops below 5 units.
+  ///
   /// [productName] is the name of the affected product.
-  /// [quantity] is the current stock level.
-  static String lowStockAdmin(String productName, int quantity) {
-    return _baseTemplate(
-      'Low Stock Alert',
-      '<p>Hello Admin,</p>'
-      '<p>The stock for <strong>$productName</strong> is running low.</p>'
-      '<p>Current Quantity: <strong>$quantity</strong></p>'
-      '<p>Please consider restocking soon.</p>',
+  /// [quantity]    is the current stock level.
+  static Future<String> lowStockAdmin(String productName, int quantity) {
+    return _load(
+      'lib/assets/email_templates/admin_low_stock.html',
+      {
+        'productName': productName,
+        'quantity':    quantity.toString(),
+      },
     );
   }
 
   /// Email sent to the admin when a product reaches zero stock.
-  static String outOfStockAdmin(String productName) {
-    return _baseTemplate(
-      'Out of Stock Alert',
-      '<p>Hello Admin,</p>'
-      '<p>The product <strong>$productName</strong> is now <strong>out of stock</strong>.</p>'
-      '<p>Please restock immediately to avoid missing potential sales.</p>',
+  ///
+  /// [productName] is the name of the out-of-stock product.
+  static Future<String> outOfStockAdmin(String productName) {
+    return _load(
+      'lib/assets/email_templates/admin_out_of_stock.html',
+      {'productName': productName},
     );
   }
 
   /// Email sent to the admin when a customer places a new order.
-  /// [orderId] is the order's database id.
+  ///
+  /// [orderId]      is the order's database ID.
   /// [customerName] is the customer's display name.
-  /// [totalAmount] is the formatted price string (e.g. "OMR 25.500").
-  static String newOrderAdmin(String orderId, String customerName, String totalAmount) {
-    return _baseTemplate(
-      'New Order Received',
-      '<p>Hello Admin,</p>'
-      '<p>A new order has been placed.</p>'
-      '<ul>'
-      '<li>Order ID: #$orderId</li>'
-      '<li>Customer: $customerName</li>'
-      '<li>Total Amount: $totalAmount</li>'
-      '</ul>'
-      '<p>Please check the admin dashboard for details.</p>',
+  /// [totalAmount]  is the formatted price string (e.g. "OMR 25.500").
+  static Future<String> newOrderAdmin(
+      String orderId, String customerName, String totalAmount) {
+    return _load(
+      'lib/assets/email_templates/admin_new_order.html',
+      {
+        'orderId':      orderId,
+        'customerName': customerName,
+        'totalAmount':  totalAmount,
+      },
     );
   }
 
   // ── Customer Notification Templates ──────────────────────────
 
-  /// Email sent to the customer when their order status changes
-  /// (e.g. Pending → Ready → In Delivery).
-  static String orderStatusChanged(
+  /// Email sent to the customer when their order status changes.
+  ///
+  /// [customerName] is the customer's display name.
+  /// [orderId]      is the order's database ID.
+  /// [newStatus]    is the updated status string.
+  static Future<String> orderStatusChanged(
       String customerName, String orderId, String newStatus) {
-    return _baseTemplate(
-      'Order Update',
-      '<p>Hi $customerName,</p>'
-      '<p>The status of your order <strong>#$orderId</strong> has been updated to: '
-      '<strong>$newStatus</strong>.</p>',
+    return _load(
+      'lib/assets/email_templates/customer_order_status.html',
+      {
+        'customerName': customerName,
+        'orderId':      orderId,
+        'newStatus':    newStatus,
+      },
     );
   }
 
   /// Email sent to the customer when their order is cancelled by the admin.
-  /// [reason] contains the admin's written explanation.
-  static String orderCancelled(
+  ///
+  /// [customerName] is the customer's display name.
+  /// [orderId]      is the order's database ID.
+  /// [reason]       is the admin's written explanation for the cancellation.
+  static Future<String> orderCancelled(
       String customerName, String orderId, String reason) {
-    return _baseTemplate(
-      'Order Cancelled',
-      '<p>Hi $customerName,</p>'
-      '<p>We regret to inform you that your order <strong>#$orderId</strong> '
-      'has been cancelled.</p>'
-      '<p><strong>Reason for cancellation:</strong> $reason</p>'
-      '<p>If you have any questions, please contact our support team.</p>',
+    return _load(
+      'lib/assets/email_templates/customer_order_cancelled.html',
+      {
+        'customerName': customerName,
+        'orderId':      orderId,
+        'reason':       reason,
+      },
     );
   }
 
   /// Email sent to the customer when their order is marked as Delivered.
-  static String orderDelivered(String customerName, String orderId) {
-    return _baseTemplate(
-      'Order Delivered',
-      '<p>Hi $customerName,</p>'
-      '<p>Good news! Your order <strong>#$orderId</strong> has been delivered.</p>'
-      '<p>We hope you are satisfied with your purchase. Thank you for shopping with us!</p>',
+  ///
+  /// [customerName] is the customer's display name.
+  /// [orderId]      is the order's database ID.
+  static Future<String> orderDelivered(String customerName, String orderId) {
+    return _load(
+      'lib/assets/email_templates/customer_order_delivered.html',
+      {
+        'customerName': customerName,
+        'orderId':      orderId,
+      },
     );
   }
 
-  /// Email sent to all customers when a previously out-of-stock product
-  /// is restocked by the admin.
-  static String productBackInStock(String customerName, String productName) {
-    return _baseTemplate(
-      'Back in Stock!',
-      '<p>Hi $customerName,</p>'
-      '<p>The product you were interested in, <strong>$productName</strong>, '
-      'is now back in stock!</p>'
-      '<p>Get it before it sells out again!</p>',
+  /// Email sent to customers when a previously out-of-stock product is restocked.
+  ///
+  /// [customerName] is the customer's display name.
+  /// [productName]  is the name of the restocked product.
+  static Future<String> productBackInStock(
+      String customerName, String productName) {
+    return _load(
+      'lib/assets/email_templates/customer_back_in_stock.html',
+      {
+        'customerName': customerName,
+        'productName':  productName,
+      },
     );
   }
 
-  /// Email sent to all customers when the admin adds a new product.
-  static String newProductAdded(
+  /// Email sent to customers when the admin adds a new product to the catalog.
+  ///
+  /// [customerName] is the customer's display name.
+  /// [productName]  is the name of the new product.
+  /// [description]  is the product's short description.
+  static Future<String> newProductAdded(
       String customerName, String productName, String description) {
-    return _baseTemplate(
-      'New Arrival!',
-      '<p>Hi $customerName,</p>'
-      '<p>We have a new addition to our catalog: <strong>$productName</strong>.</p>'
-      '<p>$description</p>'
-      '<p>Check it out in the app now!</p>',
+    return _load(
+      'lib/assets/email_templates/customer_new_product.html',
+      {
+        'customerName': customerName,
+        'productName':  productName,
+        'description':  description,
+      },
     );
   }
 
-  /// Email sent to a customer when the admin resets their password.
-  /// [newPassword] is the auto-generated temporary password.
-  static String passwordReset(String customerName, String newPassword) {
-    return _baseTemplate(
-      'Password Reset',
-      '<p>Hi $customerName,</p>'
-      '<p>Your account password has been reset by the administrator.</p>'
-      '<p>Your new temporary password is: <strong>$newPassword</strong></p>'
-      '<p>Please log in and change your password as soon as possible for security reasons.</p>',
+  /// Email sent to a customer when the admin manually resets their password.
+  ///
+  /// [customerName] is the customer's display name.
+  /// [newPassword]  is the auto-generated temporary password.
+  static Future<String> passwordReset(
+      String customerName, String newPassword) {
+    return _load(
+      'lib/assets/email_templates/customer_password_reset.html',
+      {
+        'customerName': customerName,
+        'context':      'An administrator has reset your account password. Use the temporary password below to sign in.',
+        'password':     newPassword,
+      },
+    );
+  }
+
+  /// Email sent to a customer after they successfully change their own password.
+  ///
+  /// [customerName] is the customer's display name.
+  /// [changedAt]    is a human-readable timestamp (e.g. "3 June 2026, 14:32").
+  static Future<String> passwordChanged(
+      String customerName, String changedAt) {
+    return _load(
+      'lib/assets/email_templates/customer_password_changed.html',
+      {
+        'customerName': customerName,
+        'changedAt':    changedAt,
+      },
+    );
+  }
+
+  /// Email sent to a customer when they use the self-service forgot-password flow.
+  ///
+  /// [customerName] is the customer's display name.
+  /// [tempPassword] is the randomly generated one-time password.
+  static Future<String> forgotPasswordEmail(
+      String customerName, String tempPassword) {
+    return _load(
+      'lib/assets/email_templates/customer_password_reset.html',
+      {
+        'customerName': customerName,
+        'context':      'We received a request to reset the password for your account. Use the temporary password below to sign in.',
+        'password':     tempPassword,
+      },
     );
   }
 }

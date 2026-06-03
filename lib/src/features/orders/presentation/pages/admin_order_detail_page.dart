@@ -77,13 +77,13 @@ class _AdminOrderDetailPageState extends State<AdminOrderDetailPage> {
 
       if (newStatus == 'Cancelled') {
         subject = 'Order Cancelled - #${widget.order['id']}';
-        htmlBody = EmailTemplates.orderCancelled(user['name'] ?? user['username'], widget.order['id'].toString(), reason ?? 'No reason provided');
+        htmlBody = await EmailTemplates.orderCancelled(user['name'] ?? user['username'], widget.order['id'].toString(), reason ?? 'No reason provided');
       } else if (newStatus == 'Delivered') {
         subject = 'Order Delivered - #${widget.order['id']}';
-        htmlBody = EmailTemplates.orderDelivered(user['name'] ?? user['username'], widget.order['id'].toString());
+        htmlBody = await EmailTemplates.orderDelivered(user['name'] ?? user['username'], widget.order['id'].toString());
       } else {
         subject = 'Order Status Updated - #${widget.order['id']}';
-        htmlBody = EmailTemplates.orderStatusChanged(user['name'] ?? user['username'], widget.order['id'].toString(), newStatus);
+        htmlBody = await EmailTemplates.orderStatusChanged(user['name'] ?? user['username'], widget.order['id'].toString(), newStatus);
       }
 
       await _emailService.sendGoogleEmail(

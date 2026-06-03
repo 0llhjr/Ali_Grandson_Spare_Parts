@@ -10,13 +10,23 @@
 //   4. Query the database for a matching email + password.
 //   5a. Match found → save session, go to UserDashboardPage.
 //   5b. No match    → show an error snack bar.
+//
+// Forgot Password flow:
+//   1. User taps "Forgot Password?" and enters their email.
+//   2. App looks up the email in the database.
+//   3a. Email found → generate a random 8-char temp password,
+//       update the DB, send it via email, show success message.
+//   3b. Email not found → show "no account" error.
 // ============================================================
 
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:alis_grandson_app/src/core/theme/app_colors.dart';
 import 'package:alis_grandson_app/src/core/database/database_helper.dart';
 import 'package:alis_grandson_app/src/features/dashboard/presentation/pages/user_dashboard_page.dart';
 import 'package:alis_grandson_app/src/core/session/session_manager.dart';
+import 'package:alis_grandson_app/src/shared/services/email_service.dart';
+import 'package:alis_grandson_app/src/shared/utils/email_templates.dart';
 
 /// Login form for regular customers.
 class LoginUserPage extends StatefulWidget {
@@ -52,6 +62,191 @@ class _LoginUserPageState extends State<LoginUserPage> {
         MaterialPageRoute(builder: (context) => const UserDashboardPage()),
       );
     }
+  }
+
+  /// Generates a random 8-character alphanumeric password for temporary use.
+  String _generateTempPassword() {
+    // Mix of uppercase letters, lowercase letters, and digits.
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    final rng = Random.secure();
+    return List.generate(8, (_) => chars[rng.nextInt(chars.length)]).join();
+  }
+
+  /// Shows a dialog where the customer enters their email to receive a
+  /// temporary password.  The flow:
+  ///   1. Validate the email field (not empty).
+  ///   2. Look up the email in the database.
+  ///   3. If found: generate temp password → update DB → send email → confirm.
+  ///   4. If not found: show "no account found" message.
+  void _showForgotPasswordDialog() {
+    // Separate controller/key scoped to this dialog only.
+    final emailController = TextEditingController();
+    final formKey         = GlobalKey<FormState>();
+
+    // Tracks whether the async work is in progress (shows a spinner).
+    bool isLoading = false;
+
+    showDialog(
+      context: context,
+      // Prevent dismissal by tapping outside while loading.
+      barrierDismissible: true,
+      builder: (dialogContext) {
+        return StatefulBuilder(
+          builder: (ctx, setDialogState) {
+            return AlertDialog(
+              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+              title: const Row(
+                children: [
+                  Icon(Icons.lock_reset, color: kPrimaryColor, size: 28),
+                  SizedBox(width: 10),
+                  Text(
+                    'Reset Password',
+                    style: TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                      color: kSecondaryColor,
+                    ),
+                  ),
+                ],
+              ),
+              content: SingleChildScrollView(
+                child: Form(
+                key: formKey,
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Enter the email address linked to your account. We will send you a temporary password.',
+                      style: TextStyle(color: kTextSecondary, fontSize: 14, height: 1.5),
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      controller: emailController,
+                      // Disable input while sending.
+                      enabled: !isLoading,
+                      keyboardType: TextInputType.emailAddress,
+                      decoration: const InputDecoration(
+                        labelText: 'Email Address',
+                        prefixIcon: Icon(Icons.email_outlined, size: 20),
+                        border: OutlineInputBorder(),
+                        contentPadding: EdgeInsets.symmetric(vertical: 14, horizontal: 12),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.trim().isEmpty) {
+                          return 'Please enter your email';
+                        }
+                        // Basic email format check.
+                        if (!value.contains('@') || !value.contains('.')) {
+                          return 'Enter a valid email address';
+                        }
+                        return null;
+                      },
+                    ),
+                    // Show a centred loading indicator while the email is being sent.
+                    if (isLoading) ...[
+                      const SizedBox(height: 20),
+                      const Center(
+                        child: Column(
+                          children: [
+                            CircularProgressIndicator(color: kPrimaryColor),
+                            SizedBox(height: 10),
+                            Text(
+                              'Sending password...',
+                              style: TextStyle(color: kTextSecondary, fontSize: 13),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+                ),
+              ),
+              actions: [
+                // Cancel button — disabled while loading.
+                TextButton(
+                  onPressed: isLoading ? null : () => Navigator.pop(dialogContext),
+                  child: const Text('Cancel', style: TextStyle(color: kTextSecondary)),
+                ),
+                // Send button.
+                ElevatedButton(
+                  onPressed: isLoading
+                      ? null
+                      : () async {
+                          // Validate the email field first.
+                          if (!formKey.currentState!.validate()) return;
+
+                          // Capture messenger before any async gap so it is
+                          // safe to use after the awaits complete.
+                          final messenger = ScaffoldMessenger.of(context);
+
+                          setDialogState(() => isLoading = true);
+
+                          final email = emailController.text.trim();
+
+                          // Step 1 — look up the account.
+                          final user = await DatabaseHelper.instance.getUserByEmail(email);
+
+                          if (user == null) {
+                            // No account with this email.
+                            setDialogState(() => isLoading = false);
+                            if (!ctx.mounted) return;
+                            messenger.showSnackBar(
+                              const SnackBar(
+                                content: Text('No account found with that email address.'),
+                                backgroundColor: kErrorColor,
+                                behavior: SnackBarBehavior.floating,
+                              ),
+                            );
+                            Navigator.pop(dialogContext);
+                            return;
+                          }
+
+                          // Step 2 — generate a temp password and update the DB.
+                          final tempPassword = _generateTempPassword();
+                          await DatabaseHelper.instance
+                              .updateUserPassword(user['username'] as String, tempPassword);
+
+                          // Step 3 — email the temp password to the customer.
+                          final customerName = user['name'] as String;
+                          final result = await EmailService().sendGoogleEmail(
+                            recipientEmails: email,
+                            subject: 'Your Temporary Password — Ali Grandson Spare Parts',
+                            htmlBody: await EmailTemplates.forgotPasswordEmail(customerName, tempPassword),
+                          );
+
+                          setDialogState(() => isLoading = false);
+                          if (!ctx.mounted) return;
+                          Navigator.pop(dialogContext);
+
+                          // Step 4 — show the outcome to the user.
+                          final bool emailSent = result['success'] == true;
+                          messenger.showSnackBar(
+                            SnackBar(
+                              content: Text(
+                                emailSent
+                                    ? 'Temporary password sent to $email. Check your inbox.'
+                                    : 'Password reset, but email could not be sent. Contact support.',
+                              ),
+                              backgroundColor: emailSent ? kSuccessColor : kWarningColor,
+                              behavior: SnackBarBehavior.floating,
+                              duration: const Duration(seconds: 5),
+                            ),
+                          );
+                        },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: kPrimaryColor,
+                    foregroundColor: Colors.white,
+                  ),
+                  child: const Text('Send'),
+                ),
+              ],
+            );
+          },
+        );
+      },
+    );
   }
 
   /// Validates the form, queries the database, and handles the result.
@@ -178,11 +373,11 @@ class _LoginUserPageState extends State<LoginUserPage> {
 
                   const SizedBox(height: 12),
 
-                  // ── Forgot password placeholder ────────────
+                  // ── Forgot password ────────────────────────
                   Align(
                     alignment: Alignment.centerRight,
                     child: TextButton(
-                      onPressed: () {}, // Feature not yet implemented
+                      onPressed: _showForgotPasswordDialog,
                       child: const Text('Forgot Password?',
                           style: TextStyle(color: kPrimaryColor, fontWeight: FontWeight.bold)),
                     ),

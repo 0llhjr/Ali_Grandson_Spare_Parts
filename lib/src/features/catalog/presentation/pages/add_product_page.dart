@@ -102,7 +102,7 @@ class _AddProductPageState extends State<AddProductPage> {
         await _emailService.sendGoogleEmail(
           recipientEmails: user['email'],
           subject: 'New Arrival: $name',
-          htmlBody: EmailTemplates.newProductAdded(user['name'] ?? user['username'], name, description),
+          htmlBody: await EmailTemplates.newProductAdded(user['name'] ?? user['username'], name, description),
         );
       }
     }

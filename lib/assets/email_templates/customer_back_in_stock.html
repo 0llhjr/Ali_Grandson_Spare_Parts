@@ -1,19 +1,59 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <style>
-        body { font-family: Arial, sans-serif; color: #333; }
-        .header { background: #f8f9fa; padding: 20px; text-align: center; border-bottom: 2px solid #17a2b8; }
-        .content { padding: 20px; }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body { margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif; color: #333; }
+    .wrapper { width: 100%; background-color: #f4f4f4; padding: 40px 0; }
+    .card { width: 90%; max-width: 520px; margin: 0 auto; background: #ffffff; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .header { background: linear-gradient(135deg, #800000, #5D0000); padding: 32px 24px; text-align: center; }
+    .header h1 { margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: 0.5px; }
+    .header p { margin: 6px 0 0; color: rgba(255,255,255,0.80); font-size: 13px; }
+    .body { padding: 32px 28px; }
+    .body p { margin: 0 0 16px; font-size: 15px; line-height: 1.65; }
+    .notice { border-radius: 0 6px 6px 0; padding: 14px 16px; margin: 20px 0; font-size: 13px; color: #555; }
+    .notice.blue { background: #f0f8ff; border-left: 4px solid #17A2B8; }
+    .footer { background: #f4f4f4; padding: 20px 24px; text-align: center; font-size: 11px; color: #999; border-top: 1px solid #e9ecef; }
+    /* Template-specific */
+    .product-box { background: #f0f8ff; border: 2px dashed #17A2B8; border-radius: 8px; padding: 20px 24px; text-align: center; margin: 24px 0; }
+    .product-box .badge { display: inline-block; background: #17A2B8; color: #fff; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; padding: 4px 12px; border-radius: 20px; margin-bottom: 10px; }
+    .product-box .name { font-size: 18px; font-weight: 700; color: #333; }
+  </style>
 </head>
 <body>
-    <div class="header"><h2>Back in Stock!</h2></div>
-    <div class="content">
-        <p>Hi {{customerName}},</p>
-        <p>The product you were waiting for, <strong>{{productName}}</strong>, is now back in stock!</p>
-        <p>Hurry up and get yours before it's gone again.</p>
-        <p>Thank you for choosing Ali Grandson Spare Parts!</p>
+<div class="wrapper">
+  <div class="card">
+
+    <div class="header">
+      <h1>Ali Grandson Spare Parts</h1>
+      <p>Product Back in Stock</p>
     </div>
+
+    <div class="body">
+      <p>Hi <strong>{{customerName}}</strong>,</p>
+      <p>Good news! A product you may have been waiting for is back in stock:</p>
+
+      <div class="product-box">
+        <div class="badge">Back in Stock</div>
+        <div class="name">{{productName}}</div>
+      </div>
+
+      <div class="notice blue">
+        <strong>Act fast!</strong> Stock levels can change quickly.
+        Open the app now to secure yours before it sells out again.
+      </div>
+
+      <p>Thank you for your continued support!</p>
+      <p>Best regards,<br><strong>Ali Grandson Spare Parts Team</strong></p>
+    </div>
+
+    <div class="footer">
+      &copy; {{year}} Ali Grandson Spare Parts. All rights reserved.<br>
+      This is an automated message — please do not reply directly.
+    </div>
+
+  </div>
+</div>
 </body>
 </html>
